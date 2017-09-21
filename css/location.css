@@ -1,0 +1,7 @@
+.news { background-color: gold; border: solid 1px black; float: left;}
+
+.news img { float: left; height:300px;background-color: blueviolet}
+
+.news p { float: right; background-color:grey}
+
+.clear {clear:both};

@@ -1,0 +1,87 @@
+/* css背景 */
+p {background-color: gray; padding: 20px;}
+
+/* 背景图像 */
+body {
+    background-color: purple;
+    background-image: url(http://timgsa.baidu.com/timg?image&quality=80&size=b10000_10000&sec=1506313436&di=bacaeff63c2e5fea23288049f384788f&imgtype=jpg&src=http%3A%2F%2Fimg6.bdstatic.com%2Fimg%2Fimage%2Fpublic%2Fliuling.jpg);
+    background-repeat: no-repeat;
+    background-position: center center;
+    /* background-position: 50% 0%; */
+    /* background-position:50px 100px; */
+    background-attachment: fixed;
+}
+
+/* p {text-indent: 5em;} */
+
+p {text-indent: -5em; padding-left: 5em;}
+
+
+div.indent {width: 500px;}
+p.indent{text-indent: 50%;}
+
+div#outer {width: 500px;}
+/* div#inner {text-indent: 10%;} */
+div#inner {text-indent: 10%; }
+div#inner-go{width: 200px; text-align: justify; word-spacing: 40px;letter-spacing: 3px}
+
+h1 {text-transform: capitalize; font-size: 2em}
+
+/* p {white-space:normal} */
+/* p {white-space:pre} */
+/* p {white-space:pre-wrap} */
+p {white-space:pre-line}
+/* p {white-space:nowrap} */
+
+p{direction:ltr}
+
+body {
+    font-family: sans-serif;
+    font-style: italic;
+    font-variant:small-caps;
+    font-weight:lighter;
+    font-size:100%;
+}
+
+a:link {color:#FF0000;}		/* 未被访问的链接 */
+a:visited {color:#00FF00;}	/* 已被访问的链接 */
+a:hover {color:#FF00FF;}	/* 鼠标指针移动到链接上 */
+a:active {color:#0000FF;}	/* 正在被点击的链接 */
+
+a:link {text-decoration:none;}
+a:visited {text-decoration:none;}
+a:hover {text-decoration:underline;}
+a:active {text-decoration:underline;}
+
+a:link {background-color:#B2FF99;}
+a:visited {background-color:#FFFF85;}
+a:hover {background-color:#FF704D;}
+a:active {background-color:#FF704D;}
+
+/* ul {list-style-type : square; list-style-image: url(http://192.168.6.10:85//client/images/ico/refresh.gif);list-style-position: inside} */
+
+ul li {
+    list-style: url(http://192.168.6.10:85//client/images/ico/refresh.gif) square inside
+}
+
+
+table
+{
+border-collapse:collapse;
+}
+table{width:100%;}
+th{height:50px;}
+table, th, td
+{
+  border: 1px solid blue;
+}
+
+td { background-color:green; color:white; }
+
+td
+{
+height:50px;
+vertical-align:bottom;
+}
+
+

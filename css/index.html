@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="basic.css" />
+    <title>样式学习</title>
+</head>
+<body>
+    <!-- 派生选择器 -->
+    <p><strong>我是粗体字，不是斜体字，因为我不在列表当中，所以这个规则对我不起作用</strong></p>
+    
+    <ol>
+    <li><strong>我是斜体字。这是因为 strong 元素位于 li 元素内。</strong></li>
+    <li>我是正常的字体。</li>
+    </ol>
+
+    <!-- 类选择器 -->
+
+    <h1 class="center">
+    This heading will be center-aligned
+    </h1>
+    
+    <p class="center">
+    This paragraph will also be center-aligned.
+    </p>
+
+    <table>
+        <tr>
+            <td class="fancy">这是一种样式选择</td>
+            <td>选择2</td>
+        </tr>
+    </table>
+
+    <!-- 属性选择器 -->
+    <h1>可以应用样式：</h1>
+    <h2 title="Hello world">Hello world</h2>
+    <a title="W3School" href="http://w3school.com.cn">W3School</a>
+    <hr />
+    <h1>可以应用样式：</h1>
+    <p lang="en">Hello!</p>
+    <p lang="en-us">Hi!</p>
+    <hr />
+    
+    <h1>无法应用样式：</h1>
+    <p lang="us">Hi!</p>
+    <p lang="zh">Hao!</p>
+</body>
+</html>

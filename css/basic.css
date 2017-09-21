@@ -1,0 +1,59 @@
+/* 基础语法 */
+
+body{
+    font-family: Verdana, sans-serif;
+}
+
+/* 不支持继承属性-be kind to netscape 4法则 */
+p, td, ul, ol, li, dl, dt, dd{
+    font-family: Verdana, sans-serif;
+}
+
+/* 元素独立属性 */
+p {
+    font-family:Times, serif
+}
+
+/* 派生选择器 */
+
+li strong{
+    font-style: italic;
+    font-weight: normal;
+}
+
+/* 类选择器  */
+.center {text-align: center}
+
+/* 和 id 一样，class 也可被用作派生选择器 */
+/* .fancy td{
+    color: #f60;
+	background: #666;
+} */
+
+/* 元素也可以基于它们的类而被选择 */
+td.fancy{
+    color: #f60;
+	background: #666;
+}
+
+/* 属性选择器 */
+[title]
+{
+color: red;
+}
+
+[title=W3School]
+{
+border:5px solid blue;
+}
+
+[title~=Hello] { border:5px solid purple}
+
+[lang]{color:black}
+
+[lang|=us] { color:greenyellow; }
+
+
+
+
+
