@@ -51,3 +51,16 @@ SUCCESS! -- 0 Passed | 0 Failed | 0 Pending | 0 Skipped
 --- PASS: TestBootstrap (0.00 seconds)
 PASS
 ok      books   0.019s
+
+
+# Logging Output
+Ginkgo provides a globally available io.Writer called GinkgoWriter that you can write to. GinkgoWriter aggregates input while a test is running and only dumps it to stdout if the test fails. When running in verbose mode (ginkgo -v or go test -ginkgo.v) GinkgoWriter always immediately redirects its input to stdout.
+
+When a Ginkgo test suite is interrupted (via ^C) Ginkgo will emit any content written to the GinkgoWriter. This makes it easier to debug stuck tests. This is particularly useful when paired with --progress which instruct Ginkgo to emit notifications to the GinkgoWriter as it runs through your BeforeEaches, Its, AfterEaches, etc…
+
+# IDE Support
+Ginkgo works best from the command-line, and ginkgo watch makes it easy to rerun tests on the command line whenever changes are detected.
+
+There are a set of completions available for Sublime Text (just use Package Control to install Ginkgo Completions) and for VSCode (use the extensions installer and install vscode-ginkgo).
+
+IDE authors can set the GINKGO_EDITOR_INTEGRATION environment variable to any non-empty value to enable coverage to be displayed for focused specs. By default, Ginkgo will fail with a non-zero exit code if specs are focused to ensure they do not pass in CI.
