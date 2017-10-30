@@ -287,6 +287,33 @@ Status: Downloaded newer image for ubuntu:13.10
 我们也可以使用 docker search 命令来搜索镜像。比如我们需要一个httpd的镜像来作为我们的web服务。我们可以通过 docker search 命令搜索 httpd 来寻找适合我们的镜像。
 ````
 runoob@runoob:~$  docker search httpd
+NAME                                DESCRIPTION                                     STARS     OFFICIAL   AUTOMATED
+httpd                               The Apache HTTP Server Project                  1306      [OK]       
+hypriot/rpi-busybox-httpd           Raspberry Pi compatible Docker Image with ...   38                   
+centos/httpd                                                                        15                   [OK]
+armhf/httpd                         The Apache HTTP Server Project                  8                    
+macadmins/netboot-httpd             use in combination with bruienne/bsdpy          4                    [OK]
+centos/httpd-24-centos7             Platform for running Apache httpd 2.4 or b...   3                    
+salim1983hoop/httpd24               Dockerfile running apache config                2                    [OK]
+lolhens/httpd                       Apache httpd 2 Server                           2                    [OK]
+rgielen/httpd-image-php5            Docker image for Apache httpd with PHP 5 b...   1                    [OK]
+lead4good/httpd-fpm                 httpd server which connects via fcgi proxy...   1                    [OK]
+rgielen/httpd-image-simple          Docker image for simple Apache httpd based...   1                    [OK]
+antoineco/httpd-mod_cluster         Apache HTTP Server with JBoss mod_cluster       1                    [OK]
+trollin/httpd                                                                       0                    
+manasip/httpd                                                                       0                    
+publici/httpd                       httpd:latest                                    0                    [OK]
+manageiq/httpd                      Container with httpd, built on CentOS for ...   0                    [OK]
+memeglobal/adserver-httpd-events7                                                   0                    
+jbpt/httpd                                                                          0                    [OK]
+antoineco/httpd                     Extra OS variants for the official HTTPd i...   0                    [OK]
+ppc64le/httpd                       The Apache HTTP          Server Project                  0                    
+tplatform/aws-linux-httpd24-php70   aws-linux-httpd24-php70                         0                    [OK]
+sbutler/pie-httpd                   PIE httpd server                                0                    
+efrecon/httpd                       A micro-sized httpd. Start serving files i...   0                    [OK]
+openbucks/httpd                                                                     0                    
+dockerpinata/httpd                                                                  0                    
+
 ````
 
 - NAME:镜像仓库源的名称
