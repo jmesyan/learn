@@ -33,14 +33,16 @@ root@dc0050c79503:/#
 Linux version 4.9.0-deepin12-amd64 (yangbo@deepin.com) (gcc version 6.3.0 20170321 (Debian 6.3.0-11) ) #1 SMP PREEMPT Deepin 4.9.40-3 (2017-09-19)
 ````
 - ls 操作虚拟终端和现实终端显示不同
+
   1-虚拟终端
   ````
   bin  boot  dev  etc  home  lib  lib64  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
-````
-2-现实终端
-````
-Desktop  Documents  Downloads  Music  Pictures  Steam  Templates  Videos  Wallpaper
-````
+  ````
+  2-现实终端
+  ````
+  Desktop  Documents  Downloads  Music  Pictures  Steam  Templates  Videos  Wallpaper
+  ````
+  
 可见容器和linux公用一个源头，但是里面的内容是虚拟化的ubantu
 我们可以通过运行exit命令或者使用CTRL+D来退出容器。
 
