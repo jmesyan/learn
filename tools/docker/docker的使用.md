@@ -193,7 +193,7 @@ runoob@runoob:~$ docker inspect determined_swanson
         ],
         "State": {
             "Status": "running",
-......
+略
 ````
 ## 停止WEB应用容器
 ````
@@ -225,6 +225,7 @@ determined_swanson
 runoob@runoob:~$ docker rm determined_swanson
 Error response from daemon: You cannot remove a running container 7a38a1ad55c6914b360b565819604733db751d86afd2575236a70a2519527361. Stop the container before attempting removal or use -f
 ````
+
 # Docker镜像使用
 
 当运行容器时，使用的镜像如果在本地中不存在，docker 就会自动从 docker 镜像仓库中下载，默认是从 Docker Hub 公共镜像源下载。
