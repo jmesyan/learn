@@ -18,13 +18,58 @@ message SearchRequest {
 ## 定义字段类型
 上面例子总包含两种字段类型, 都是标量类型-两个整形(page_number 和 result_per_page) 和一个字符串类型(query)。但是，你可能需要其他类型去组合你的字段，例如枚举类型和其他类型.
 ## 设置字段标签
-
-### 标量类型
-一个标量消息字段可以有如下类型:
+正如你所看到的一样，每一个消息字段都会定义一个唯一的数字化标签，这些标签将会用来标识你的字段在消息中的二进制格式, 一旦你的消息类型在使用了就不应该再改变了。注意1-15的标签值占用1byte去编码，包括识别号码和字段的类型.16-2047标签值占用2bytes编码。所以你应该确保大量字段保存在1-15的标签纸，并且为未来可能大量使用的字段预留空间.
+最小的标签值可以指定为1， 最大的为2^29-1 或者536，870，911.但是你不能使用19000-19999的标签值,因为它们作为了协议的缓存实现，当然也不能使用先前已经保存的标签,否则编译器会报错。
+## 指定字段规则
+消息字段可指定如下规则：
+- 单数（singular）：一个格式良好的消息可以有零个或者一个这个字段-但是不超过一个
+- 重复 (repeated) : 一个格式良好的消息可以重复该字段任意次（包括零次）, 重复次序将会保存。
+在proto3里面, 重复字段是标量型数字将会默认使用打包编码.
+## 添加更多的消息类型
+多个消息类型可以定义在同一个.proto文件里，当你需要定义多个相关联的消息时这是非常有用的.例如你可以定义SearchResponse消息作为请求消息的回应，如下：
 ````
+message SearchRequest {
+  string query = 1;
+  int32 page_number = 2;
+  int32 result_per_page = 3;
+}
+
+message SearchResponse {
+ ...
+}
+````
+## 添加注释,
+可以使用c/c++风格的注释, // 或者 /*...*/
+
+````
+/* SearchRequest represents a search query, with pagination options to
+ * indicate which results to include in the response. */
+
+message SearchRequest {
+  string query = 1;
+  int32 page_number = 2;  // Which page number do we want?
+  int32 result_per_page = 3;  // Number of results to return per page.
+}
+````
+## 预留字段
+````
+message Foo {
+  reserved 2, 15, 9 to 11;
+  reserved "foo", "bar";
+}
+
+````
+如果未来有用户尝试使用如上预留的名称和标签数字，编译器编译时将会报错，注意同一个reserved中不能混合存放名称和标签数字
+## 通过.proto编译会产生什么
+当你使用proto buffer编译时将会产生你选择的开发语言所对应的代码，包括get和set字段值，序列化你的消息输出和解析你的消息输入.
+-针对Go语言,将会为你每一个消息类型生成.pb.go文件
+
+
+# 标量类型
+一个标量消息字段可以有如下类型:
 ![](./images/proto1.png)
 ![](./images/proto2.png)
-````
+
 默认值：
 - strings =>empty string
 - bytes => empty bytes
@@ -33,7 +78,7 @@ message SearchRequest {
 - enums => 第一个定义的enum类型值，应该为0
 要注意，如果将标量消息字段设置为它的默认值，则该值将不会被串行化
 
-### 枚举类型
+## 枚举类型
 当你定义一个消息类型时，你可能想要定义一个包含预定义值的字段。例如为搜索请求消息添加一个字段corpus-词库， 词库可能包含如下关键词-UNIVERSAL, WEB, IMAGES, LOCAL, NEWS, PRODUCTS 或者 VIDEO， 你可以添加一个枚举类型将所有可能的词加入常量，示例如下:
 ````
 message SearchRequest {
@@ -78,7 +123,7 @@ MessageType.EnumType
 如果你使用proto buffer编译器编译一个包含枚举类型的文件，不同语言会生成不同的格式
 在反序列化的过程中，未确认的枚举值将会在消息中保存，这些值反序列后如何表达取决于不同的语言，如c++和Go，未知枚举值被简单地存储为其底层整数表示
 
-### 使用其他消息类型
+## 使用其他消息类型
 你可以使用其他的消息类型作为字段类型, 例如你可以在SearchRespone消息中包含一个结果消息类型, 示例如下：
 ````
 message SearchResponse {
@@ -112,3 +157,44 @@ import "old.proto";
 
 编译器将会查找输入参数 -I / --proto_path下的文件，如果没有提供该参数，编译器将会查找编译调用的目录， 通过情况下你应该社会该参数为你的项目根目录， 并且将所有引入使用全路径
 
+## 使用proto2消息类型
+可以在proto3中使用proto2消息，但是proto2的枚举类型不能直接在proto3语法中使用,如果时引入的Proto2消息那是可以的。
+
+# 嵌套定义
+你可以在一个消息类型中定义和使用另一个消息类型,如下所示：
+````
+message SearchResponse {
+  message Result {
+    string url = 1;
+    string title = 2;
+    repeated string snippets = 3;
+  }
+  repeated Result results = 1;
+}
+````
+如果想在这个消息外的消息中使用，可以使用Parent.type格式
+````
+message SomeOtherMessage {
+  SearchResponse.Result result = 1;
+}
+````
+你可以按照自己的想法多层嵌套
+````
+message Outer {                  // Level 0
+  message MiddleAA {  // Level 1
+    message Inner {   // Level 2
+      int64 ival = 1;
+      bool  booly = 2;
+    }
+  }
+  message MiddleBB {  // Level 1
+    message Inner {   // Level 2
+      int32 ival = 1;
+      bool  booly = 2;
+    }
+  }
+}
+````
+# 更新一个消息类型
+如果一个消息类型不再满足你的所有需求-例如, 你想消息中添加一个额外的字段，但是你仍然想使用老格式产生的代码，不用担心，在不破坏你原有代码的情况下可以很简单的更新你的消息。只要记住如下规则:
+- 不要改变任何已经存在的数字标签
