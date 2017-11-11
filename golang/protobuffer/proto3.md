@@ -317,4 +317,86 @@ SubMessage* sub_message = message.mutable_sub_message();
 message.set_name("name");      // Will delete sub_message
 sub_message->set_...            // Crashes here
 ````
+- 再次在c++中，如果交换oneof类型消息，每个消息将会结束当前字段使用对方字段，如下，msg1 将会拥有一个sub_message，并且msg2将会拥有一个name：
+````
+SampleMessage msg1;
+msg1.set_name("name");
+SampleMessage msg2;
+msg2.mutable_sub_message();
+msg1.swap(&msg2);
+CHECK(msg1.has_sub_message());
+CHECK(msg2.has_name());
+````
 
+## 向后兼容性问题
+
+在增加或者删除oneof字段时一定要小心，如果检查到oneof字段返回None/not_set, 这意味着这个oneof字段未设置或者在不同版本进行设置了。没法区分，因为不能区分未知字段是否是oneof字段
+
+## 标签重用问题
+- 将字段移进或者移除oneof：在序列化和解析过程中你可能会丢失一些信息（有些信息可能会被清掉）
+- 删除一个oneof字段后来又添加：这样可能会清空你当前oneof设置，在消息序列化和解析过程中
+- 分割或者合并oneof：这个影响类似移动普通的字段
+
+# 映射（maps）
+如果你想在你的数据定义中创建一个联想的映射类型， protocol buffers提供了一个便捷的语法：
+````
+map<key_type, value_type> map_field = N;
+````
+key_type可以是积分或者字符串类型（所以，任何除了浮点型或者bytes类型的标量类型都可以）。 注意枚举类型不是一个有效的key_type,value_type可以是任何除了是其他map类型的类型。
+
+举个例子，如果你想创建一个映射关联每个project消息，你可以如下定义：
+````
+map<string, Project> projects = 3;
+````
+- map 字段不能够重复
+- 在线排序或者迭代排序是不明确的，所以你不能依赖你的map项会在特定的排序中
+- 当在.proto中产生了文本格式数据，maps会按照key来排序，数字key按照向上排序
+- 当解析在线或者合并数据时，如果是复制的map keys最后一个将会被使用。如果在解析文本数据格式时有两个key解析将会失败
+
+产生map api代码在proto3协议中支持。
+
+## 向后兼容性
+map语法和下面在线的是等价的，所以 proto buffers 如果不支持maps仍然能够处理你的数据：
+````
+message MapFieldEntry {
+  key_type key = 1;
+  value_type value = 2;
+}
+
+repeated MapFieldEntry map_field = N;
+````
+
+# 包（Packages）
+你可以选择使用package标记一个.proto文件防止协议消息类型间产生命名冲突
+````
+package foo.bar;
+message Open { ... }
+````
+你在引用其他消息类型定义自己的类型时，可以指定是那个包的：
+````
+message Foo {
+  ...
+  foo.bar.Open open = 1;
+  ...
+}
+````
+不同语言产生的代码会有不同的影响
+- Go语言, package标签会被当作go package包名，除非你明确的提供一个可选的go_package项
+
+## 包和名字解决方案
+在protocol buffer 中类型名称工作机制类似c++，先在内部查找，提前的.号(如 .foo.bar.Baz) 意味着在外部域中查找。
+
+protocol buffers 编译器将会通过解析所有引入的.proto文件解决类型名称问题。代码产生器知道如何对照不同的语言产生不同的代码，即使有不同的标准
+
+# 定义服务-Services
+如果你想在远程调用中使用你定义的消息，你可以在一个.proto文件中定义好一个rpc服务接口，然后编译器可以产生对应语言的接口代码。例如你可以定义一个rpc服务去处理searchRequest和返回 searchReponse,你可以像下面这样定义：
+````
+service SearchService {
+  rpc Search (SearchRequest) returns (SearchResponse);
+}
+````
+最直白使用protocol buffer的rpc系统是grpc，当然也可以使用在其他rpc系统中
+
+# JSON 编码参照
+proto3支持典型的json格式编码，使得不同系统间可以轻松分享数据。这些编码描述在下面的都是基础的类型对类型的。
+如果一种类型在
