@@ -402,3 +402,58 @@ proto3支持典型的json格式编码，使得不同系统间可以轻松分享�
 如果在编码时值缺失或者值为null，在protobuffer解析时会赋值合适的默认值。如果一个字段在定义时有默认值，在压缩数据时该字段的值将会忽略，解析时会赋值对应的默认值。不同语言会有不同的忽略。 
 ![](./images/proto3.png)
 ![](./images/proto4.png)
+
+# 选项
+独立的申明可能带有一系列选项注释。一个选项并不会改变一个声明的所有意思，可能会影响在特殊环境下的作用。完整的可用选项定义在google/protobuf/descriptor.proto
+
+有些选项可能是文件类型的选项，意味着他们必选在最高级别范围内写入，而不是消息内部，枚举或者服务定义内。有些选项是消息级别，意味着他们只能写在消息内部。有些选项是字段级别的，他们应该在字段内定义。选项也可以写在枚举类型，枚举值，服务类型和服务方法里，但是在这些里面现在没有有用的选项。
+
+下面是一些常用的选项：
+- java_package(文件选项)：标识你想用来生成java类代码的java包，如果在.proto文件中没有明确的java_package选项，编译器将会识别package标识。但是，proto packages 可能并不会产生好的代码，如果没产生代码，这个标识就没做用了：
+````
+option java_package = "com.example.foo";
+````
+- java_multiple_files(文件选项)：在包级别定义最高级别消息，枚举和服务。而不是在proto文件外部类里面 
+````
+option java_multiple_files = true;
+````
+- java_outer_classname(文件选项)：定义你想产生的java最外层代码类名，也是其文件名。如果没有明确的指定，使用类名采用小驼峰法（如 foo_bar.proto=>fooBar.java）,没产生代码，该选项不会生效：
+````
+option java_outer_classname = "Ponycopter";
+````
+- optimize_for(文件选项): 能够设置为SPEED,CODE_SIZE或者LITE_RUNTIME。会影响c++和java（或者其他第三方）编译器：
+  - SPEED（默认值）：编译器将产生最佳优化代码
+  - CODE_SIZE: 编译器将会产生最小量代码，适合项目中有大量.proto文件，但是有用的并不多。
+  - LITE_RUNTIME： 编译器将会产生轻量级依赖代码，使用libprotobuf-lite而不是libprotobuf生成，忽略了一些特性，如descriptors和reflection。适合app在低级适配时使用
+
+  ````
+  option optimize_for = CODE_SIZE;
+  ````
+- cc_enable_arenas(文件选项):使c++产生代码时能够arena allocation
+- objc_class_prefix（文件选项）：设置object-c 类前缀
+- deprecated （文件选项）：如果设置为true，表明该文件被废弃了，不应该被新代码使用。大多数语言没有实际的效果。在java里面，这个变成了@deprecated 注释。未来，其他指定语言可能会为存储器产生带注释的废弃代码，编译时如果使用该字段会产生对应的警告。如果只是单纯一个字段，你可以在字段里声明：
+````
+int32 old_field = 6 [deprecated=true];
+````
+## 自定义选项
+protocol buffers 也允许你自定义选项，这是个大多数人不需要的高级特性，如果你想了解，阅读proto2文档了解详情
+
+# 产生代码
+你应该使用protocol buffers编译器在.proto文件上执行protoc 命令产生不同语言对应的代码，如果你还没有安装对应的编译器，请先安装，对于go语言，也需要安装一个特殊的编译插件，你可以在[ golang/protobuf](https://github.com/golang/protobuf/)中找到安装说明
+
+编译器调用命令如下：
+````
+protoc --proto_path=IMPORT_PATH --cpp_out=DST_DIR --java_out=DST_DIR --python_out=DST_DIR --go_out=DST_DIR --ruby_out=DST_DIR --javanano_out=DST_DIR --objc_out=DST_DIR --csharp_out=DST_DIR path/to/file.proto
+````
+- IMPORT_PATH:指定查找proto文件的目录，如果忽略，使用当前文件，如果有多个文件目录，可以使用该选项多次，他们将按照顺序查找，-I=IMPORT_PATH 可以作为其简写
+- 你可以设置一个或者多个输出指定
+  - --cpp_out：在指定目录产生c++代码
+  - --java_out：在指定目录产生java代码
+  - --python_out：在指定目录产生python代码
+  - --go_out：在指定目录产生go代码
+  - --ruby_out：在指定目录产生ruby代码
+  - --javanano_out：在指定目录产生javaNano代码
+  - 同理-objc_out , csharp_out, php_out
+额外的便利就是，如果目标目录以.zip或者.jar结尾，编译器将会生成打包文件，如果存在相同的将会覆盖
+
+- 有多个proto文件，使用-I 标识，这样编译器才能知道优先级
