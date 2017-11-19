@@ -71,3 +71,42 @@ default:
 因为 ch 插入 1 的时候已经满了， 当 ch 要插入 2 的时候，发现 ch 已经满了（case1 阻塞住）， 则 select 执行 default 语句。 这样就可以实现对 channel 是否已满的检测， 而不是一直等待。
 
 比如我们有一个服务， 当请求进来的时候我们会生成一个 job 扔进 channel， 由其他协程从 channel 中获取 job 去执行。 但是我们希望当 channel 瞒了的时候， 将该 job 抛弃并回复 【服务繁忙，请稍微再试。】 就可以用 select 实现该需求。
+
+# 多select处理
+````
+// loopyWriter is run in a separate go routine. It is the single code path that will
+// write data on wire.
+func loopyWriter(ctx context.Context, cbuf *controlBuffer, handler func(item) error) {
+	for {
+		select {
+		case i := <-cbuf.get():
+			cbuf.load()
+			if err := handler(i); err != nil {
+				errorf("transport: Error while handling item. Err: %v", err)
+				return
+			}
+		case <-ctx.Done():
+			return
+		}
+	hasData:
+		for {
+			select {
+			case i := <-cbuf.get():
+				cbuf.load()
+				if err := handler(i); err != nil {
+					errorf("transport: Error while handling item. Err: %v", err)
+					return
+				}
+			case <-ctx.Done():
+				return
+			default:
+				if err := handler(&flushIO{}); err != nil {
+					errorf("transport: Error while flushing. Err: %v", err)
+					return
+				}
+				break hasData
+			}
+		}
+	}
+}
+````
